@@ -1,9 +1,7 @@
 
 # Holder
 
-<p align="center">
-  <img src="./icon128.png" width="128" alt="Holder Logo">
-</p>
+
 
 <h3 align="center">
 A simple and lightweight Chrome extension for managing browser content.
