@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Holder</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+    body {
+      background: #f4f6fa;
+      margin: 0;
+      padding: 0.5rem;
+      width: 520px;
+      max-height: 680px;
+      overflow-y: auto;
+    }
+    .container {
+      width: 100%;
+      background: white;
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .tabs {
+      display: flex;
+      gap: 0.3rem;
+      border-bottom: 2px solid #e9edf4;
+      margin-bottom: 0.8rem;
+    }
+    .tab-btn {
+      padding: 0.4rem 1.2rem;
+      border: none;
+      background: transparent;
+      color: #6b7f98;
+      font-weight: 500;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: #1d2d44;
+    }
+    .tab-btn.active {
+      color: #1d2d44;
+      border-bottom-color: #1d2d44;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    h1 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 0 0 0.2rem 0;
+      color: #0b1b33;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .sub {
+      color: #4a5b6e;
+      font-size: 0.7rem;
+      margin-bottom: 0.8rem;
+      padding-left: 0.7rem;
+      border-left: 3px solid #8a9bb5;
+    }
+    .search-box {
+      width: 100%;
+      padding: 0.35rem 0.8rem;
+      border: 1px solid #d3dceb;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      margin-bottom: 0.6rem;
+      outline: none;
+    }
+    .search-box:focus {
+      border-color: #1d2d44;
+      box-shadow: 0 0 0 3px rgba(29,45,68,0.08);
+    }
+    .account-grid, .project-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin: 0.4rem 0 0.6rem;
+      max-height: 260px;
+      overflow-y: auto;
+    }
+    .account-card, .project-card {
+      background: #f9faff;
+      border-radius: 12px;
+      padding: 0.5rem 0.7rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #e9edf4;
+      gap: 0.3rem;
+      transition: all 0.1s ease;
+    }
+    .account-card.blocked {
+      background: #fef3f0;
+      border-color: #fad2cc;
+    }
+    .project-card {
+      background: #f0f7ff;
+      border-color: #d0e0f0;
+    }
+    .account-info, .project-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      flex: 2 1 100px;
+      min-width: 70px;
+    }
+    .account-email, .project-name {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: #0f1e32;
+    }
+    .account-password {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.65rem;
+      color: #3d5068;
+      background: #eef2f8;
+      padding: 0.05rem 0.4rem;
+      border-radius: 30px;
+      display: inline-block;
+      width: fit-content;
+    }
+    .project-link {
+      font-size: 0.65rem;
+      color: #2563eb;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .project-link:hover {
+      text-decoration: underline;
+    }
+    .project-note {
+      font-size: 0.65rem;
+      color: #6b7f98;
+    }
+    .timer-section {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.2rem;
+      flex: 1 1 130px;
+      justify-content: flex-end;
+    }
+    .timer-badge {
+      background: #e6ecf5;
+      padding: 0.1rem 0.5rem;
+      border-radius: 30px;
+      font-size: 0.6rem;
+      font-weight: 500;
+      color: #1d314a;
+      white-space: nowrap;
+    }
+    .timer-badge.limit-hit {
+      background: #fee2db;
+      color: #a63a2a;
+    }
+    .btn-group {
+      display: flex;
+      gap: 0.2rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: white;
+      border: 1px solid #cdd7e6;
+      padding: 0.1rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.6rem;
+      font-weight: 500;
+      color: #1d2d44;
+      cursor: pointer;
+      transition: 0.1s;
+      background: #f1f5fd;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: #1d2d44;
+      border: 1px solid #1d2d44;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #0f1e32;
+    }
+    .btn-danger {
+      background: #fce9e6;
+      border-color: #f0cbc4;
+      color: #a13f30;
+    }
+    .btn-danger:hover {
+      background: #fad8d2;
+    }
+    .btn-success {
+      background: #e1f0e6;
+      border-color: #b8d5c4;
+      color: #1d6b44;
+    }
+    .btn-success:hover {
+      background: #cde8da;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #cad3e0;
+    }
+    .btn-outline:hover {
+      background: #e9eef7;
+    }
+    .btn-sm {
+      font-size: 0.5rem;
+      padding: 0.05rem 0.35rem;
+    }
+    .btn:active {
+      transform: scale(0.95);
+    }
+    .add-area {
+      background: #f2f6fd;
+      border-radius: 30px;
+      padding: 0.5rem 0.7rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.3rem;
+      border: 1px dashed #bcc9db;
+      margin-top: 0.3rem;
+    }
+    .add-area input, .add-area textarea {
+      border: 1px solid #d3dceb;
+      border-radius: 20px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.7rem;
+      background: white;
+      outline: none;
+      flex: 1 1 50px;
+      min-width: 45px;
+    }
+    .add-area input:focus, .add-area textarea:focus {
+      border-color: #1d2d44;
+      box-shadow: 0 0 0 3px rgba(29,45,68,0.08);
+    }
+    .add-area textarea {
+      flex: 1 1 80px;
+      resize: vertical;
+      min-height: 25px;
+      max-height: 50px;
+    }
+    .add-area .btn {
+      padding: 0.25rem 0.8rem;
+      font-size: 0.7rem;
+    }
+    .pw-generator {
+      display: flex;
+      gap: 0.2rem;
+      align-items: center;
+    }
+    .pw-generator input {
+      width: 30px;
+      text-align: center;
+    }
+    .db-status {
+      font-size: 0.6rem;
+      color: #5b6f88;
+      background: #ecf1f9;
+      padding: 0.15rem 0.5rem;
+      border-radius: 30px;
+      display: inline-block;
+    }
+    .footer-actions {
+      display: flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      margin-top: 0.4rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .empty-message {
+      color: #62748b;
+      text-align: center;
+      padding: 0.5rem;
+      font-style: italic;
+      font-size: 0.75rem;
+    }
+    .copy-btn {
+      cursor: pointer;
+      font-size: 0.55rem;
+      opacity: 0.6;
+      transition: 0.2s;
+      background: none;
+      border: none;
+      padding: 0 0.15rem;
+    }
+    .copy-btn:hover {
+      opacity: 1;
+      color: #1d2d44;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.05rem 0.35rem;
+      border-radius: 20px;
+      font-size: 0.5rem;
+      background: #dbeafe;
+      color: #1e40af;
+      margin-right: 0.15rem;
+    }
+    .settings-group {
+      padding: 0.3rem 0;
+    }
+    .settings-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid #e9edf4;
+    }
+    .settings-item label {
+      font-size: 0.75rem;
+      color: #1d2d44;
+    }
+    .settings-item input[type="checkbox"] {
+      accent-color: #1d2d44;
+      width: 16px;
+      height: 16px;
+    }
+    ::-webkit-scrollbar {
+      width: 3px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f4f9;
+    }
+
+    /* Dark Mode */
+    .dark-mode {
+      background: #1a1a2e;
+    }
+    .dark-mode .container {
+      background: #16213e;
+    }
+    .dark-mode .tab-btn {
+      color: #8a8aaa;
+    }
+    .dark-mode .tab-btn.active {
+      color: #e0e0e0;
+      border-bottom-color: #4a6fa5;
+    }
+    .dark-mode .sub {
+      color: #a0a0c0;
+      border-left-color: #4a6fa5;
+    }
+    .dark-mode .account-card {
+      background: #1e2a4a;
+      border-color: #2a3a5a;
+    }
+    .dark-mode .project-card {
+      background: #1a2a3a;
+      border-color: #2a3a5a;
+    }
+    .dark-mode .account-email {
+      color: #e8e8f0;
+    }
+    .dark-mode .account-password {
+      background: #2a3a5a;
+      color: #b0b0d0;
+    }
+    .dark-mode .project-name {
+      color: #e8e8f0;
+    }
+    .dark-mode .project-link {
+      color: #6a9fe5;
+    }
+    .dark-mode .project-link:hover {
+      color: #8ab8f0;
+    }
+    .dark-mode .project-note {
+      color: #9090b0;
+    }
+    .dark-mode .timer-badge {
+      background: #2a3a5a;
+      color: #c0c0e0;
+    }
+    .dark-mode .timer-badge.limit-hit {
+      background: #4a2a2a;
+      color: #f0a0a0;
+    }
+    .dark-mode .add-area {
+      background: #1a2a3a;
+      border-color: #2a4a5a;
+    }
+    .dark-mode .add-area input {
+      background: #1e2e4e;
+      color: #e0e0e8;
+      border-color: #3a4a6a;
+    }
+    .dark-mode .add-area input::placeholder {
+      color: #6a7a8a;
+    }
+    .dark-mode .add-area textarea {
+      background: #1e2e4e;
+      color: #e0e0e8;
+      border-color: #3a4a6a;
+    }
+    .dark-mode .add-area textarea::placeholder {
+      color: #6a7a8a;
+    }
+    .dark-mode .db-status {
+      background: #1e2e4e;
+      color: #a0a0c0;
+    }
+    .dark-mode .search-box {
+      background: #1e2e4e;
+      color: #e0e0e8;
+      border-color: #3a4a6a;
+    }
+    .dark-mode .search-box::placeholder {
+      color: #6a7a8a;
+    }
+    .dark-mode .btn {
+      background: #2a3a5a;
+      border-color: #3a4a6a;
+      color: #d0d0e0;
+    }
+    .dark-mode .btn:hover {
+      background: #3a4a6a;
+    }
+    .dark-mode .btn-primary {
+      background: #4a6fa5;
+      border-color: #4a6fa5;
+      color: white;
+    }
+    .dark-mode .btn-primary:hover {
+      background: #5a7fb5;
+    }
+    .dark-mode .btn-danger {
+      background: #5a2a2a;
+      border-color: #6a3a3a;
+      color: #f0a0a0;
+    }
+    .dark-mode .btn-danger:hover {
+      background: #6a3a3a;
+    }
+    .dark-mode .btn-success {
+      background: #2a4a3a;
+      border-color: #3a5a4a;
+      color: #90d0b0;
+    }
+    .dark-mode .btn-success:hover {
+      background: #3a5a4a;
+    }
+    .dark-mode .btn-outline {
+      background: transparent;
+      border-color: #3a4a6a;
+      color: #a0a0c0;
+    }
+    .dark-mode .btn-outline:hover {
+      background: #2a3a5a;
+    }
+    .dark-mode .empty-message {
+      color: #8a8aaa;
+    }
+    .dark-mode .settings-item {
+      border-bottom-color: #2a3a5a;
+    }
+    .dark-mode .settings-item label {
+      color: #d0d0e0;
+    }
+    .dark-mode .settings-item input {
+      background: #1e2e4e;
+      color: #e0e0e8;
+      border-color: #3a4a6a;
+    }
+    .dark-mode .settings-item input[type="checkbox"] {
+      accent-color: #4a6fa5;
+    }
+    .dark-mode .tag {
+      background: #2a4a6a;
+      color: #8ab8f0;
+    }
+    .dark-mode .copy-btn {
+      color: #8a8aaa;
+    }
+    .dark-mode .copy-btn:hover {
+      color: #d0d0e0;
+    }
+    .dark-mode h1 {
+      color: #e0e0e8;
+    }
+  </style>
+</head>
+<body>
+<div class="container" id="app">
+  <!-- Header -->
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h1>📋 Holder</h1>
+    <span style="font-size:0.6rem; color:#6b7f98;">v2.0</span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="accounts">👤 Accounts</button>
+    <button class="tab-btn" data-tab="projects">📁 Projects</button>
+    <button class="tab-btn" data-tab="settings">⚙️ Settings</button>
+  </div>
+
+  <!-- TAB 1: ACCOUNTS -->
+  <div class="tab-content active" id="tab-accounts">
+    <div class="sub">Manage accounts with timers & cooldowns</div>
+    
+    <input type="text" class="search-box" id="searchAccounts" placeholder="🔍 Search accounts...">
+    
+    <div id="accountList" class="account-grid"></div>
+
+    <div class="add-area">
+      <input type="email" id="newEmail" placeholder="Email">
+      <input type="text" id="newPassword" placeholder="Password">
+      <div class="pw-generator">
+        <input type="number" id="passwordLength" value="12" min="6" max="32">
+        <button class="btn btn-outline btn-sm" id="generatePasswordBtn">🔑 Gen</button>
+      </div>
+      <input type="number" id="newMinutes" placeholder="Min" value="60" min="1" style="width:40px;">
+      <input type="text" id="newCategory" placeholder="Tag" style="width:55px;">
+      <button class="btn btn-primary" id="addAccountBtn">➕ Add</button>
+    </div>
+
+    <div class="footer-actions">
+      <span class="db-status" id="dbStatus">💾 Accounts: <span id="accountCount">0</span></span>
+      <div>
+        <button class="btn btn-outline" id="resetAllBtn">🔄 Reset timers</button>
+        <button class="btn btn-danger" id="clearAllBtn">🗑️ Clear all</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: PROJECTS -->
+  <div class="tab-content" id="tab-projects">
+    <div class="sub">Manage your projects & links</div>
+    
+    <input type="text" class="search-box" id="searchProjects" placeholder="🔍 Search projects...">
+    
+    <div id="projectList" class="project-grid"></div>
+
+    <div class="add-area">
+      <input type="text" id="newProjectName" placeholder="Project name">
+      <input type="url" id="newProjectLink" placeholder="Link (URL)">
+      <input type="text" id="newProjectNote" placeholder="Note" style="flex:1 1 70px;">
+      <button class="btn btn-primary" id="addProjectBtn">➕ Add</button>
+    </div>
+
+    <div class="footer-actions">
+      <span class="db-status" id="projectStatus">📁 Projects: <span id="projectCount">0</span></span>
+      <button class="btn btn-danger" id="clearProjectsBtn">🗑️ Clear all</button>
+    </div>
+  </div>
+
+  <!-- TAB 3: SETTINGS -->
+  <div class="tab-content" id="tab-settings">
+    <div class="sub">Settings & preferences</div>
+    
+    <div class="settings-group">
+      <div class="settings-item">
+        <label>🌙 Dark Mode</label>
+        <input type="checkbox" id="darkModeToggle">
+      </div>
+    </div>
+
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;">
+      <button class="btn btn-primary" id="exportDataBtn">💾 Export All Data</button>
+      <button class="btn btn-outline" id="importDataBtn">📂 Import Data</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none;">
+    </div>
+    <div style="margin-top:0.5rem; font-size:0.6rem; color:#6b7f98;">
+      Export creates a JSON backup of all accounts and projects.
+    </div>
+  </div>
+</div>
+<script src="popup.js"></script>
+</body>
+</html>
