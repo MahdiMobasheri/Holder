@@ -46,10 +46,6 @@ Just a simple browser tool.
 3. Use the extension features directly from your browser.
 4. You can use any email provider you prefer, such as Google, Yahoo, or other services.
 
-For users who need an alternative email service, you can also check:
-
-https://atomicmail.io
-
 You can share this project with others by sharing this repository.
 
 ---
@@ -221,9 +217,5 @@ chrome://extensions/
 - Google
 - Yahoo
 - یا سرویس‌های مشابه
-
-همچنین می‌توانید از سرویس‌هایی مثل:
-
-https://atomicmail.io
 
 استفاده کنید.
