@@ -216,6 +216,6 @@ chrome://extensions/
 
 - Google
 - Yahoo
-- یا سرویس‌های مشابه
+- یا سرویس‌های مشابه مثل http://atomicmail.io 
 
 استفاده کنید.
